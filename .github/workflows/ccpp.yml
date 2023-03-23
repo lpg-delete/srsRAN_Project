@@ -16,3 +16,28 @@ jobs:
         sudo apt update
         sudo apt install -y cmake make gcc g++ pkg-config libfftw3-dev libmbedtls-dev libsctp-dev libyaml-cpp-dev libgtest-dev ninja-build
         mkdir build && cd build && cmake -DENABLE_UHD=False -GNinja .. && ninja && ctest
+
+  aarch64_ubuntu_build:
+    name: Build on aarch64
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-20.04]
+        compiler: [gcc, clang]
+        include:
+          - os: ubuntu-22.04
+            distro: ubuntu22.04
+          - os: ubuntu-20.04
+            distro: ubuntu20.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build srsRAN Project on aarch64 ${{ matrix.os }}
+      uses: uraimo/run-on-arch-action@master
+      with:
+        arch: aarch64
+        distro: ${{ matrix.distro }}
+        run: |
+          apt update
+          apt install -y cmake make gcc g++ pkg-config libfftw3-dev libmbedtls-dev libsctp-dev libyaml-cpp-dev libgtest-dev ninja-build
+          mkdir build && cd build && cmake -DENABLE_UHD=False -GNinja .. && ninja && ctest
